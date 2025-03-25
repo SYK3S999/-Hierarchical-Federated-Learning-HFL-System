@@ -1,0 +1,11 @@
+# Inherit from base image
+FROM hfl-base:latest
+
+# Copy client-specific code
+COPY client/client.py /app/client.py
+COPY client/requirements.txt /app/requirements.txt
+
+# Install additional client-specific dependencies (if any)
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Command will be set in docker-compose.yml

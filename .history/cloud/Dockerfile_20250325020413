@@ -1,0 +1,14 @@
+# Inherit from base image
+FROM hfl-base:latest
+
+# Install torchvision (cloud-specific for MNIST loading)
+RUN pip install --no-cache-dir torchvision==0.15.2
+
+# Copy cloud-specific code
+COPY cloud/cloud.py /app/cloud.py
+COPY cloud/requirements.txt /app/requirements.txt
+
+# Install additional cloud-specific dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Command will be set in docker-compose.yml

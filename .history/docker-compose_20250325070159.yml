@@ -1,0 +1,107 @@
+services:
+  cloud:
+    build:
+      context: .
+      dockerfile: cloud/Dockerfile
+    ports:
+      - "6000:6000"
+    volumes:
+      - ./data:/data
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+
+  edge0:
+    build:
+      context: .
+      dockerfile: edge/Dockerfile
+    command: ["python", "edge.py", "0", "0.5"]
+    ports:
+      - "5000:5000"
+    depends_on:
+      - cloud
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+
+  edge1:
+    build:
+      context: .
+      dockerfile: edge/Dockerfile
+    command: ["python", "edge.py", "1", "0.5"]
+    ports:
+      - "5001:5001"
+    depends_on:
+      - cloud
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+
+  client0:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    command: ["python", "client.py", "0", "0.25"]
+    depends_on:
+      - edge0
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+
+  client1:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    command: ["python", "client.py", "1", "0.25"]
+    depends_on:
+      - edge0
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.15'
+
+  client2:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    command: ["python", "client.py", "2", "0.25"]
+    depends_on:
+      - edge1
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+
+  client3:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    command: ["python", "client.py", "3", "0.25"]
+    depends_on:
+      - edge1
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.15'
+
+networks:
+  hfl-net:
+    driver: bridge

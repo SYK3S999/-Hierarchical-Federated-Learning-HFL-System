@@ -1,0 +1,23 @@
+# Base image with Python 3.9
+FROM python:3.9-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install common Python dependencies
+RUN pip install --no-cache-dir \
+    torch==2.0.1 \
+    torchvision==0.15.2 \
+    numpy==1.24.3 \
+    psutil==5.9.5
+
+# Copy common code (model and utils)
+COPY common/ /app/common/
+
+# Ensure common is a package
+RUN touch /app/common/__init__.py

@@ -1,0 +1,11 @@
+# Inherit from base image
+FROM hfl-base:latest
+
+# Copy edge-specific code
+COPY edge/edge.py /app/edge.py
+COPY edge/requirements.txt /app/requirements.txt
+
+# Install additional edge-specific dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Command will be set in docker-compose.yml
