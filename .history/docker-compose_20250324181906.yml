@@ -1,0 +1,94 @@
+version: '3'
+services:
+  cloud:
+    build: ./cloud
+    ports:
+      - "6000:6000"
+    volumes:
+      - ./data:/data
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+
+  edge0:
+    build: ./edge
+    command: ["python", "edge.py", "0", "0.5"]
+    ports:
+      - "5000:5000"
+    depends_on:
+      - cloud
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+
+  edge1:
+    build: ./edge
+    command: ["python", "edge.py", "1", "0.5"]
+    ports:
+      - "5001:5001"
+    depends_on:
+      - cloud
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+
+  client0:
+    build: ./client
+    command: ["python", "client.py", "0", "0.25"]
+    depends_on:
+      - edge0
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+
+  client1:
+    build: ./client
+    command: ["python", "client.py", "1", "0.25"]
+    depends_on:
+      - edge0
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.15'
+
+  client2:
+    build: ./client
+    command: ["python", "client.py", "2", "0.25"]
+    depends_on:
+      - edge1
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+
+  client3:
+    build: ./client
+    command: ["python", "client.py", "3", "0.25"]
+    depends_on:
+      - edge1
+    networks:
+      - hfl-net
+    deploy:
+      resources:
+        limits:
+          cpus: '0.15'
+
+networks:
+  hfl-net:
+    driver: bridge
